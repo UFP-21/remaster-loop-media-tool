@@ -1,0 +1,49 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Streamlit / env
+.env
+.env.*
+secrets.toml
+.streamlit/secrets.toml
+
+# VS Code / IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+tmp/
+temp/
+cache/
+
+# Media work folders
+uploads_audio/
+uploads_video/
+uploads_images/
+outputs/
+previews/
+processed/
+downloads/
+RemasterLoop_Work/
+
+# Large media files
+*.wav
+*.mp3
+*.flac
+*.mp4
+*.mov
+*.avi
+*.mkv
