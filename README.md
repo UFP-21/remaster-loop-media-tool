@@ -1,131 +1,278 @@
 # Remaster+Loop — Media Processing Tool
 
-## О проекте
+**Remaster+Loop** is a local Streamlit application for preparing audio and video content through reusable FFmpeg-based workflows.
 
-Remaster+Loop — веб-приложение для подготовки аудио- и видеоконтента.
+The tool brings common post-production tasks into one interface: audio trimming, automatic silence removal, loudness preparation, track merging, crossfades, looping, video merging, clip creation from audio and a background image or video, and Spotify Canvas export.
 
-Проект автоматизирует типовые задачи постобработки: обрезку аудио, авто-срез тишины, нормализацию, склейку треков, кроссфейды, зацикливание аудио, склейку видеофрагментов и подготовку готовых клипов на основе аудио, фонового видео или изображений.
+> **Repository status:** this public repository contains the working application source code. Large media files, private materials, temporary outputs, and environment-specific files are intentionally excluded.
 
-## Какую задачу решает
+![Audio mastering workflow](assets/mastering.jpg)
 
-При подготовке музыкального и видеоконтента часто приходится выполнять повторяющиеся операции:
+## The problem
 
-- обрезать начало и конец трека;
-- убрать тишину;
-- подготовить loop-версию;
-- склеить несколько аудиофрагментов;
-- сделать плавный переход через crossfade;
-- объединить аудио с фоновым видео или изображением;
-- быстро получить готовый файл для публикации.
+Preparing music and video content often requires the same sequence of repetitive operations:
 
-Remaster+Loop объединяет эти операции в одном инструменте.
+- trim the beginning or end of a track;
+- remove unwanted silence;
+- prepare a seamless loop;
+- merge several audio files;
+- create smooth transitions with crossfades;
+- combine audio with a background image or video;
+- merge video fragments;
+- export a publication-ready result.
 
-## Основные функции
+These tasks are commonly spread across separate applications or repeated manually through command-line tools. Remaster+Loop combines them into one guided local workflow.
 
-- загрузка аудио;
-- загрузка видео или изображения;
-- авто-срез тишины;
-- обрезка аудио по времени;
-- нормализация громкости;
-- склейка нескольких треков;
-- crossfade между фрагментами;
-- зацикливание аудио;
-- создание видео на основе аудио и фонового изображения;
-- склейка видеофрагментов;
-- экспорт готового результата.
+## Core capabilities
 
-## Что сделано 
+- audio file upload and validation;
+- automatic silence trimming;
+- time-based audio trimming;
+- loudness and mastering workflows;
+- track merging;
+- configurable crossfades;
+- seamless audio looping;
+- video-fragment merging;
+- video creation from audio and a background image or video;
+- vertical Spotify Canvas preparation;
+- temporary-workspace cleanup;
+- export of processed results;
+- Windows setup and run scripts;
+- built-in user guide.
 
-- проектирование логики приложения;
-- backend для обработки файлов;
-- маршруты загрузки и обработки медиа;
-- пайплайн аудиообработки;
-- пайплайн видеосборки;
-- работа с временными файлами;
-- подготовка структуры проекта;
-- интерфейсные сценарии пользователя;
-- обработка ошибок при загрузке и экспорте файлов.
+## Application modules
 
-## Стек
+The Streamlit sidebar exposes separate workflows:
 
-- Python
-- FastAPI / Flask
-- FFmpeg
-- MoviePy / Pydub
-- HTML / CSS / JavaScript
-- file processing
-- media automation
+1. **Mastering**  
+   Prepare an audio file using configurable processing presets.
 
-## Архитектура
+2. **Track Merge**  
+   Join several audio files and configure transitions between them.
 
-Проект можно разделить на несколько слоёв:
+3. **Video Merge**  
+   Concatenate multiple video fragments into one result.
 
-1. Web UI  
-   Интерфейс загрузки файлов, выбора режима обработки и запуска операции.
+4. **Create Video Clip**  
+   Combine audio with a still image or background video.
 
-2. Backend API  
-   Приём файлов, валидация параметров, запуск нужного сценария обработки.
+5. **Looping**  
+   Build a repeated or seamless audio version.
 
-3. Audio processing layer  
-   Обрезка, нормализация, удаление тишины, crossfade, loop.
+6. **Spotify Canvas**  
+   Prepare short vertical 9:16 media for Spotify Canvas.
 
-4. Video processing layer  
-   Склейка видео, добавление аудио, подготовка клипа.
+7. **Workspace Cleanup**  
+   Remove temporary processing files safely.
 
-5. Export layer  
-   Сохранение результата и выдача готового файла пользователю.
+8. **User Guide**  
+   Open instructions directly from the application.
 
-## Основной workflow
+## Architecture
 
-1. Пользователь загружает аудио, видео или изображение.
-2. Выбирает нужный режим обработки.
-3. Backend сохраняет временные файлы.
-4. Сервис обработки запускает FFmpeg / Python pipeline.
-5. Создаётся итоговый файл.
-6. Пользователь скачивает результат.
+```mermaid
+flowchart LR
+    U[Streamlit UI] --> V[Input validation]
+    V --> J[Processing workflow]
+    J --> A[Audio processing modules]
+    J --> M[Video processing modules]
+    A --> F[FFmpeg command layer]
+    M --> F
+    F --> W[Temporary workspace]
+    W --> E[Exported media file]
+    U --> C[Workspace cleanup]
+    C --> W
+```
 
-## Скриншоты
+### UI layer
 
-### Мастеринг
-<a href="assets/mastering.jpg">
-  <img src="assets/mastering.jpg" width="100%">
-</a>
+`app.py` is the Streamlit entry point. It builds the application navigation and routes the user to specialized pages in `ui/pages`.
 
-### Склейка треков
-<a href="assets/track-merge.jpg">
-  <img src="assets/track-merge.jpg" width="100%">
-</a>
+### Processing layer
 
-### Склейка видео
-<a href="assets/video-merge.jpg">
-  <img src="assets/video-merge.jpg" width="100%">
-</a>
+The `core` package contains separate audio and video workflows, including mastering, track concatenation, looping, Canvas preparation, video merging, and rendering.
 
-### Создание видеоклипа
-<a href="assets/video-clip-creation.jpg">
-  <img src="assets/video-clip-creation.jpg" width="100%">
-</a>
+### FFmpeg layer
+
+Media operations are executed through reusable FFmpeg helpers rather than being embedded directly into page code.
+
+### Job and state layer
+
+The `jobs` package and Streamlit session state keep processing parameters and workflow state separate from the UI.
+
+### Workspace and export layer
+
+Temporary input and output files are handled through project path utilities. The cleanup page provides a controlled way to remove working files.
+
+## Main workflow
+
+1. The user opens the local Streamlit application.
+2. A processing module is selected from the sidebar.
+3. The user uploads audio, video, or an image.
+4. The application validates the selected files and parameters.
+5. The requested Python and FFmpeg workflow runs locally.
+6. The result is saved to the working directory.
+7. The user downloads or reuses the exported file.
+8. Temporary files can be removed from the cleanup module.
+
+## Screenshots
+
+### Audio mastering
+
+![Audio mastering](assets/mastering.jpg)
+
+The mastering page provides a guided workflow for preparing an audio track and exporting the processed result.
+
+### Track merging
+
+![Track merging](assets/track-merge.jpg)
+
+Multiple tracks can be arranged and combined into one output with transition settings.
+
+### Video merging
+
+![Video merging](assets/video-merge.jpg)
+
+The video workflow joins several fragments into one continuous file.
+
+### Video clip creation
+
+![Video clip creation](assets/video-clip-creation.jpg)
+
+Audio can be combined with a background image or video to create a publication-ready clip.
 
 ### Spotify Canvas
-<a href="assets/spotify-canvas.jpg">
-  <img src="assets/spotify-canvas.jpg" width="100%">
-</a>
 
-## Руководство
+![Spotify Canvas](assets/spotify-canvas.jpg)
 
-[Скачать руководство пользователя](assets/user-guide.docx)
+The Canvas workflow prepares short vertical media in a 9:16 format.
 
-## Безопасность публикации
+## Tech stack
 
-В репозиторий не добавлены:
+- Python
+- Streamlit
+- FFmpeg
+- NumPy
+- python-dotenv
+- local file processing
+- media workflow automation
+- Windows batch scripts
 
-- приватные файлы;
-- ключи;
-- `.env`;
-- большие медиафайлы;
-- чужие аудио- и видеоматериалы;
-- временные результаты обработки.
+## Repository structure
 
-## Статус
+```text
+remaster-loop-media-tool/
+├── .streamlit/
+├── assets/
+│   ├── mastering.jpg
+│   ├── spotify-canvas.jpg
+│   ├── track-merge.jpg
+│   ├── user-guide.docx
+│   ├── video-clip-creation.jpg
+│   └── video-merge.jpg
+├── core/
+│   ├── audio/
+│   ├── video/
+│   ├── audio_loop.py
+│   ├── canvas_tools.py
+│   ├── concat_tracks.py
+│   ├── concat_videos.py
+│   ├── ffmpeg.py
+│   ├── mastering.py
+│   ├── mastering_presets.py
+│   ├── paths.py
+│   ├── presets.py
+│   ├── utils.py
+│   └── video_render.py
+├── jobs/
+├── ui/
+├── app.py
+├── requirements.txt
+├── RUN_APP.bat
+└── SETUP_FIRST_RUN.bat
+```
 
-Рабочий pet-проект / portfolio project. Код опубликован для демонстрации backend-логики, обработки файлов и прикладной автоматизации.
+## Local setup
+
+### Windows quick start
+
+For the first launch, run:
+
+```text
+SETUP_FIRST_RUN.bat
+```
+
+For later launches:
+
+```text
+RUN_APP.bat
+```
+
+### Manual setup
+
+Create and activate a virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+Install Python dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Make sure FFmpeg is installed and available in the system `PATH`.
+
+Start the application:
+
+```bash
+streamlit run app.py
+```
+
+## User guide
+
+A detailed Russian-language user guide is included in the repository:
+
+[Download the user guide](assets/user-guide.docx)
+
+## My role
+
+I designed and implemented the application workflow, including:
+
+- product logic and module separation;
+- Streamlit navigation and user scenarios;
+- audio-processing pipelines;
+- video-processing pipelines;
+- FFmpeg integration;
+- temporary-file handling;
+- processing presets;
+- export workflows;
+- validation and user-facing error handling;
+- Windows setup and launch automation.
+
+## Publication safety
+
+The public repository does not include:
+
+- API keys or credentials;
+- `.env` files;
+- private source media;
+- copyrighted audio and video materials;
+- large working media files;
+- temporary processing results;
+- local caches and environment folders.
+
+## Project status
+
+The application is a working local portfolio project. Its source code is published to demonstrate practical Python development, FFmpeg integration, file-processing workflows, UI organization, and media automation.
+
+## What this project demonstrates
+
+- building a practical local Python application;
+- separating interface code from processing logic;
+- automating repeatable audio and video workflows;
+- integrating FFmpeg into a user-facing tool;
+- handling uploaded files and temporary outputs;
+- creating modular processing pipelines;
+- preparing software for non-technical Windows users.
